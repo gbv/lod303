@@ -7,13 +7,13 @@ $path   = @$_REQUEST['path'];
 $format = @$_REQUEST['format']; if (!$format) $format = 'html';
 $debug  = (array_key_exists('debug',$_REQUEST) and $_REQUEST['debug'] != '0');
 $base   = strtok($_SERVER["REQUEST_URI"],'?');
-;
+
+if ($format == 'turtle') $format = 'ttl';
+
 $id = $path;
 $id = preg_replace('/\/.*/','',$id);
 
-if ( $res = @$resources[$id] ) {
-    $location = @$res[$format] ? @$res[$format] : 'html';
-}
+$location = @$resources[$id][$format];
 
 if ($debug or !$path) { ?>
   <h1><?php echo htmlspecialchars($base); ?></h1>
