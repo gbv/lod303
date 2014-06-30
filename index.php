@@ -8,7 +8,7 @@ $format = @$_REQUEST['format']; if (!$format) $format = 'html';
 $debug  = (array_key_exists('debug',$_REQUEST) and $_REQUEST['debug'] != '0');
 
 $id = $path;
-$id = preg_replace('/\/.+/','',$id);
+$id = preg_replace('/\/.*/','',$id);
 
 if ( $res = @$resources[$id] ) {
     $location = @$res[$format] ? @$res[$format] : 'html';
