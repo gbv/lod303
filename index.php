@@ -6,7 +6,8 @@ $resources = parse_ini_file($config,true);
 $path   = @$_REQUEST['path'];
 $format = @$_REQUEST['format']; if (!$format) $format = 'html';
 $debug  = (array_key_exists('debug',$_REQUEST) and $_REQUEST['debug'] != '0');
-
+$base   = strtok($_SERVER["REQUEST_URI"],'?');
+;
 $id = $path;
 $id = preg_replace('/\/.*/','',$id);
 
@@ -14,7 +15,9 @@ if ( $res = @$resources[$id] ) {
     $location = @$res[$format] ? @$res[$format] : 'html';
 }
 
-if ($debug) { ?>
+if ($debug or !$path) { ?>
+  <h1><?php echo htmlspecialchars($base); ?></h1>
+  <h2>request</h2>
   <dl>
       <dt>path</dt>
       <dd><tt><?php echo htmlspecialchars($path) ?></tt></dd>
@@ -24,13 +27,15 @@ if ($debug) { ?>
       <dd><tt><?php echo htmlspecialchars($location) ?></tt></dd>
   </dl>
   <hr>
-  <b><a href="<?php print "$config\">$config"; ?></a></b>
-  <pre><?php
-    array_walk_recursive($resources, function(&$v) { 
-        $v = htmlspecialchars($v); 
-    });
-    print_r($resources);
-  ?><pre><?php 
+  <h2><a href="<?php print "$config\">$config"; ?></a></h2>
+<?php
+    foreach ($resources as $key => $value) {
+      echo "<h3><a href='//".$_SERVER['SERVER_NAME']."$base$key'>$key</h3>\n<ul>\n";
+      foreach ($value as $f => $url) {
+        echo "<li><a href='$url'>$f</li>\n";
+      }
+      echo "</ul>\n";
+    }
 } else {
     if ($location) {
         header("HTTP/1.1 303 See Other");
